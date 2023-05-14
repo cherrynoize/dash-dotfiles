@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ "$1" = "-s" ]; then
+  acpi -b | grep Discharging > /dev/null &&
+    status="Battery usage" ||
+    status="AC"
+  notify-send "$status" "$(acpi -b)"
+elif [ -n "$1" ]; then
+  notify-send "${@:2}" "$1" "$(acpi -b)"
+else
+  notify-send "$(acpi -b)"
+fi

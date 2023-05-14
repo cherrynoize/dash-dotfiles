@@ -1,0 +1,84 @@
+#!/bin/bash
+# contexts to call when --all is passed
+declare -a all_ctx=(
+  "wallpaper"
+  "polybar"
+  "conky"
+  "nvim"
+  "alacritty"
+)
+
+terminate () {
+  echo $post_exec
+  eval "$post_exec"
+  exit 0
+}
+
+if [ "$#" -lt "2" ]; then
+  echo "error: not enough arguments. need to specify mode." 
+  exit 1
+fi
+
+_ctx="${1}"
+_mode="${2}"
+
+if [ "${_mode}" == "dark" ]; then
+  old_theme="light"
+elif [ "${_mode}" == "light" ]; then
+  old_theme="dark"
+else
+  echo "error: invalid input. could not find mode: ${_mode}"
+  exit 2
+fi
+
+if [ "${_ctx}" == "-a" ] || [ "${_ctx}" == "--all" ]; then
+  for c in "${all_ctx[@]}"; do
+    # set passed mode for each context individually
+    $0 "$c" "$2"
+  done
+  terminate
+elif [ "${_ctx}" == "wallpaper" ]; then
+  config_dir="${HOME}"
+  config_filename=".wallpaper"
+  config_ext=""
+  post_exec+="${HOME}/.fehbg;"
+elif [ "${_ctx}" == "polybar" ]; then
+  config_dir="${HOME}/.config/polybar/themes/current"
+  config_filename="colors"
+  config_ext=".ini"
+  post_exec+="${HOME}/.config/polybar/launch.sh;"
+elif [ "${_ctx}" == "conky" ]; then
+  config_dir="${HOME}/.config/conky"
+  config_filename="colors"
+  config_ext=".lua"
+  post_exec+="pgrep conky && launch-conky -r;"
+elif [ "${_ctx}" == "nvim" ]; then
+  config_dir="${HOME}/.config/nvim/lua/user/lua/core"
+  config_filename="colorscheme"
+  config_ext=".lua"
+elif [ "${_ctx}" == "alacritty" ]; then
+  config_dir="${HOME}/.config/alacritty"
+  config_filename="alacritty"
+  config_ext=".yml"
+else
+  echo "error: invalid input. could not find context: ${_ctx}"
+  exit 2
+fi
+
+new_config="${config_dir}/${config_filename}-${_mode}${config_ext}"
+old_config="${config_dir}/${config_filename}-${old_theme}${config_ext}"
+config_file="${config_dir}/${config_filename}${config_ext}"
+
+if [ -e "$new_config" ]; then
+  if [ -e "$config_file" ]; then
+    mv "${config_file}" "${old_config}"
+  fi
+  mv "${new_config}" "${config_file}"
+elif [ -e "$old_config" ]; then
+  echo "${_ctx}: ${_mode} mode already set."
+else
+  echo "error: mode file not found."
+  exit 3
+fi
+
+terminate

@@ -1,0 +1,2 @@
+#!/bin/sh
+rofi -config $HOME/.config/rofi/launcher/config.rasi -show drun

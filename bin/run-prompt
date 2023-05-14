@@ -1,0 +1,2 @@
+#!/bin/sh
+rofi -config $HOME/.config/rofi/run-prompt.rasi -show run

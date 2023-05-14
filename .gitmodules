@@ -1,0 +1,9 @@
+[submodule ".config/bash-git-prompt"]
+	path = .config/bash-git-prompt
+	url = https://github.com/magicmonty/bash-git-prompt.git
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = https://github.com/AstroNvim/AstroNvim
+[submodule ".config/rofi/rofi-network-manager"]
+	path = .config/rofi/rofi-network-manager
+	url = https://github.com/P3rf/rofi-network-manager.git

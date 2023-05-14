@@ -1,0 +1,16 @@
+#!/bin/sh
+if [ "$1" = "-p" ] || [ "$1" = "--polybar" ]; then
+  # hide cover module
+  polybar-msg action "#network-data.module_hide"
+  # show inner modules
+  polybar-msg action "#wireless-network.module_show"
+  polybar-msg action "#wired-network.module_show"
+fi
+~/.config/rofi/rofi-network-manager/rofi-network-manager.sh
+if [ "$1" = "-p" ] || [ "$1" = "--polybar" ]; then
+  # show cover module
+  polybar-msg action "#network-data.module_show"
+  # hide inner modules
+  polybar-msg action "#wireless-network.module_hide"
+  polybar-msg action "#wired-network.module_hide"
+fi

@@ -1,0 +1,304 @@
+#    _____  _| |__ | | ____| |_ __ ___ 
+#   / __\ \/ / '_ \| |/ / _` | '__/ __|  ^ cherry-noize
+#   \__ \>  <| | | |   < (_| | | | (__   ^ https://github.com/cherrynoize
+#   |___/_/\_\_| |_|_|\_\__,_|_|  \___|  ^ 0xo1m0x5w@mozmail.com 
+#
+
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + Return
+    ${TERMINAL}
+
+# open editor
+super + space ; e
+    ${TERMINAL} -e "${EDITOR}"
+
+# open audacity
+super + space ; a
+    audacity
+
+# open ranger
+super + space ; r
+    ${TERMINAL} -e ranger
+
+# launch discord
+super + space ; d
+    discord
+
+# open mail
+super + space ; m
+    $MAILCLIENT
+
+# open browser
+super + space ; w
+    $BROWSER
+
+# toggle conky
+super + space ; c
+    pgrep conky && killall conky || launch-conky
+
+# restart conky
+super + space ; shift + c
+    launch-conky -r
+
+# toggle panel
+super + space ; z
+    bspwm-toggle-panel
+
+# screen to clipboard
+super + shift + backslash
+    snap -x
+
+# take screenshot
+super + backslash
+    snap
+
+# network menu
+super + n
+    netmenu -p
+
+# launch powermenu
+super + q
+    powermenu
+
+# run prompt
+super + r
+    run-prompt
+
+# program launcher
+super + x
+    launcher
+
+# toggle dark mode
+super + less
+    switch-mode -a light
+super + greater
+    switch-mode -a dark
+
+# change wallpaper
+super + alt + w
+    ${HOME}/.fehbg
+
+#
+# player controls
+#
+
+# run or kill spotify
+super + space ; s
+    pgrep spotify && killall spotify || spotify
+
+# show playing
+super + s ; apostrophe
+    show-playing
+
+# prev song
+super + s ; p
+    playerctl previous
+
+# back two songs
+super + s ; P
+    playerctl previous; playerctl previous
+
+# next song
+super + s ; n
+    playerctl next
+
+# play/pause
+super + s ; space
+    playerctl play-pause
+
+# volume down
+super + s ; d
+    pa-change-app-volume Spotify volume -10%
+super + s ; {1-9,0} ; d
+    pa-change-app-volume Spotify volume -{1-9,10}0%
+
+# volume up
+super + s ; u
+    pa-change-app-volume Spotify volume +10%
+super + s ; {1-9,0} ; u
+    pa-change-app-volume Spotify volume +{1-9,10}0%
+
+# mute toggle
+super + s ; m
+    pa-change-app-volume Spotify mute toggle
+
+#
+# external commands
+#
+
+# prev or next track
+XF86Audio{Prev,Next}
+	mpc -q {prev,next}
+
+# brightness increase/decrease by 1
+super + space ; {minus,plus} ; l
+    set-light -{d,u} 1
+
+# brightness set value
+super + space ; {0-9} ; l
+    set-light -r {0-9}
+super + space ; {0-9} ; {0-9} ; l
+    set-light -r {0-9}{0-9}
+
+# brightness down/up
+XF86MonBrightness{Down,Up}
+    set-light -{d,u}r 7
+
+# brightness min/max
+super + XF86MonBrightness{Down,Up}
+#   set-light -a {0,$(cat /sys/class/backlight/*/max_brightness)}
+    set-light -{m,M}
+
+# perceived brightness below/above
+super + space ; XF86MonBrightness{Down,Up}
+    xrandr --output $(xrandr | grep -w connected  | awk -F'[ \+]' '\{print $1\}' 2>/dev/null) --brightness {.5,1.5}
+
+# perceived brightness normal/higher
+super + shift + XF86MonBrightness{Down,Up}
+    xrandr --output $(xrandr | grep -w connected  | awk -F'[ \+]' '{print $1}' 2>/dev/null) --brightness {1,2}
+
+# volume down/up
+XF86Audio{Lower,Raise}Volume
+    amixer sset Master 5%{-,+}
+
+# audio mute
+XF86AudioMute
+    amixer sset Master togglemute
+
+# show date popup
+super + d
+    notify-date
+
+# show battery status
+super + space ; b
+    notify-bat -s
+
+# close all notifications
+super + space ; k
+    dunstctl close-all
+# kill battery timer notifications
+#   notify-timer -k 1111
+
+#
+# sxhkd hotkeys
+#
+
+# sxhkd reload 
+super + Escape
+    pkill -USR1 -x sxhkd
+
+#
+# bspwm hotkeys
+#
+
+# quit/restart bspwm
+super + shift + {q,r}
+    bspc {quit,wm -r}
+
+# kill bspwm
+super + ctrl + q
+    bspc quit
+
+# node close and kill
+super + {shift, alt} + w
+    bspc node -{c,k}
+
+# alternate between the tiled and monocle layout
+super + m
+    bspc desktop -l next
+
+# send the newest marked node to the newest preselected node
+super + y
+    bspc node newest.marked.local -n newest.!automatic.local
+
+# swap the current node and the biggest window
+super + g
+    bspc node -s biggest.window
+
+#
+# state/flags
+#
+
+# set the window state
+super + {t,shift + t,shift + f,f}
+    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# set the node flags
+super + ctrl + {m,x,y,z}
+    bspc node -g {marked,locked,sticky,private}
+
+#
+# focus/swap
+#
+
+# focus the node in the given direction
+super + {_,shift + }{h,j,k,l}
+    bspc node -{f,s} {west,south,north,east}
+
+# focus the node for the given path jump
+super + {p,b,comma,period}
+    bspc node -f @{parent,brother,first,second}
+
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+    bspc node -f {next,prev}.local.!hidden.window
+
+# focus the next/previous desktop in the current monitor
+super + {_,shift + } bracket{left,right} + {_,ctrl}
+    bspc {desktop -f,node -d} {prev,next}.local {_,--follow}
+
+# focus the last node/desktop
+super + {shift + ,_} Tab
+    bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+    bspc wm -h off; \
+    bspc node {older,newer} -f; \
+    bspc wm -h on
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0,apostrophe,igrave}
+    bspc {desktop -f,node -d} '^{1-9,10,11,12}'
+
+#
+# preselect
+#
+
+# preselect the direction
+super + ctrl + {h,j,k,l}
+    bspc node -p {west,south,north,east}
+
+# preselect the ratio
+super + ctrl + {1-9}
+    bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+    bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + alt + space
+    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# move/resize
+#
+
+# expand a window by moving one of its side outward
+super + alt + {h,j,k,l}
+    bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# contract a window by moving one of its side inward
+super + alt + shift + {h,j,k,l}
+    bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# move a floating window
+super + shift + {u,i,o,p}
+    bspc node -v {-20 0,0 20,0 -20,20 0}
+super + {Left,Down,Up,Right}
+    bspc node -v {-20 0,0 20,0 -20,20 0}

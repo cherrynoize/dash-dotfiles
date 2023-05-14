@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Run process if not already running
+run() {
+  if ! pgrep -f "$1" ;
+  then
+    "$@"&
+  fi
+}
+
+# Set keyboard layout (better use 00-keyboard.conf).
+# (Keyboard widgets in status bar may show "us" on login
+# until you type a key, then it corrects itself. This
+# should prevent it.)
+#setxkbmap -layout 'it,us,us' -variant ',,dvp'
+setxkbmap -layout 'it,us'
+#
+# The dvp variant currently causes some issues with
+# the Super + Shift + c keybinding, used for killing
+# clients in awesome.
+
+# Start session processes
+polkit-dumb-agent &
+run redshift
+picom -b
+~/.fehbg &

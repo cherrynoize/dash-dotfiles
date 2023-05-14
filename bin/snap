@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# save image to clipboard only (and in /tmp)
+if [ "$1" = "-x" ]; then
+  scrot '/tmp/%Y-%m-%d-%H%M%S_$wx$h_$a-'"${USER}_snap.png" -e 'xclip -selection clipboard -t image/png -i "$f"'
+  exit
+fi
+
+# SNAPPATH default fallback
+if [ -z ${SNAPPATH+x} ]; then
+  SNAPPATH="${HOME}/scrot"
+fi
+
+# SNAPDELAY default fallback
+if [ -z "${SNAPDELAY+x}" ]; then
+  if [ -z "${1+x}" ] || [ "$1" = "-e" ]; then
+    # if no args are passed use default delay
+    SNAPDELAY=".1"
+  else
+    # set first argument as delay before execution
+    SNAPDELAY=$1
+  fi	
+fi	
+
+# create path to destination
+if [ ! -e "$SNAPPATH" ]; then
+  mkdir -p "$SNAPPATH"
+fi
+
+# destination to save screenshot to
+dest="${SNAPPATH}/%Y-%m-%d-%H%M%S_"'$wx$h_$a'"-${USER}_snap.png"
+
+# wait for specified delay before screenshot
+sleep "$SNAPDELAY"
+
+# actions to execute after capture
+if [ ! "$1" = "-q" ]; then # if not quiet
+  # add notification option
+  notif='dunstify --action="default,Default" -t "5000" -r "5445" "Screenshot taken" "Saved to $f"'
+fi
+post='optipng "$f" & '"$notif"
+# override with command line -e option
+if [ "$1" = "-e" ]; then
+  post="$2"
+fi
+
+# take screenshot
+scrot "$dest" -e "$post" 

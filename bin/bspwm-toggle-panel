@@ -1,0 +1,9 @@
+#!/bin/sh
+if pgrep polybar; then
+  pkill -USR1 -x polybar
+  _tp="5"
+else
+  ~/.config/polybar/launch.sh
+  _tp="55"
+fi
+bspc config top_padding "$_tp"
