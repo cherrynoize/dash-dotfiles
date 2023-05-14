@@ -1,0 +1,12 @@
+# avoid recursion
+.dotfiles
+# avoid not really config
+.cache
+.old
+# heavy files
+target
+build
+dist
+Mail
+storage
+node_modules
